@@ -4,8 +4,11 @@ import com.gdsc.greener.config.auth.OAuthAttributes;
 import com.gdsc.greener.config.auth.SessionUser;
 import com.gdsc.greener.domain.User;
 import com.gdsc.greener.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpSession;
 import java.util.Collections;
 
+/*
 @RequiredArgsConstructor
 @Service
 public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
@@ -49,5 +53,20 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
                 .map(entity -> entity.update(attributes.getName(), attributes.getPicture()))
                 .orElse(attributes.toEntity());
         return userRepository.save(user);
+    }
+}
+*/
+
+
+@AllArgsConstructor
+@Service
+public class UserService implements UserDetailsService {
+
+    private final UserRepository userRepository;
+
+    //Spring security 필수 구현 method
+    @Override
+    public User loadUserByUsername(String userID) throws UsernameNotFoundException {
+        return userRepository.findById(userID).orElseThrow(() -> new UsernameNotFoundException(userID));
     }
 }
