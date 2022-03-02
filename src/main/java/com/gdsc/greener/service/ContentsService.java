@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class ContentsService {
+
     @Autowired
     private ContentsRepository contentsRepository;
 

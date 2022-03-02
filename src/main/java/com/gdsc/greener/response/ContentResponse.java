@@ -16,6 +16,7 @@ public class ContentResponse {
         this.url = contents.getUrl();
     }
 
+
     public ContentResponse(Emotion emotion, String url) {
         this.emotion = emotion;
         this.url = url;
