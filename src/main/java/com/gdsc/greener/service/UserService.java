@@ -2,13 +2,19 @@ package com.gdsc.greener.service;
 
 import com.gdsc.greener.config.auth.OAuthAttributes;
 import com.gdsc.greener.config.auth.SessionUser;
+import com.gdsc.greener.domain.Role;
 import com.gdsc.greener.domain.User;
+import com.gdsc.greener.dto.UserDto;
 import com.gdsc.greener.repository.UserRepository;
+import com.gdsc.greener.request.CreateUserRequest;
+import com.gdsc.greener.request.UserRequest;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -68,5 +74,24 @@ public class UserService implements UserDetailsService {
     @Override
     public User loadUserByUsername(String userID) throws UsernameNotFoundException {
         return userRepository.findById(userID).orElseThrow(() -> new UsernameNotFoundException(userID));
+    }
+
+    public void signup(CreateUserRequest createUserRequest) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        userRepository.save(new User(
+                createUserRequest.getName(),
+                createUserRequest.getEmail(),
+                encoder.encode(createUserRequest.getPassword()),
+                null,
+                Role.USER
+        ));
+    }
+
+    /* 로그인 */
+    public UserDto signin(UserRequest userRequest) {
+        String email = userRequest.getEmail();
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException(email));
+        return new UserDto(user.getEmail(), user.getName());
     }
 }
