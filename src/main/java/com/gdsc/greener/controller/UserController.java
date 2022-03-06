@@ -17,7 +17,7 @@ public class UserController {
 
     /* 회원가입 */
     @PostMapping(value = "/signup")
-    public HttpStatus signup(CreateUserRequest createUserRequest){
+    public HttpStatus signup(@RequestBody CreateUserRequest createUserRequest){
         userService.signup(createUserRequest);
 
         return HttpStatus.CREATED;
@@ -25,7 +25,7 @@ public class UserController {
 
     /* 로그인 */
     @PostMapping(value = "/signin")
-    public UserResponse signin(UserRequest userRequest) {
+    public UserResponse signin(@RequestBody UserRequest userRequest) {
         UserDto user = userService.signin(userRequest);
         return new UserResponse(user.getName(), user.getEmail());
     }

@@ -20,7 +20,7 @@ public class ContentsController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/contents")
-    public ContentResponse createContents(CreateContentRequest contentRequest){ // user 다시 정리되면 jwt 확인 후 사용 가능
+    public ContentResponse createContents(@RequestBody CreateContentRequest contentRequest){ // user 다시 정리되면 jwt 확인 후 사용 가능
         return contentsService.createContent(contentRequest);
     }
 
@@ -30,7 +30,7 @@ public class ContentsController {
     }
 
     @GetMapping("/contents")
-    public ContentsResponse getContents(GetContentsByEmotionRequest contentRequest) {
+    public ContentsResponse getContents(@RequestBody GetContentsByEmotionRequest contentRequest) {
         return contentsService.getContentsByEmotion(contentRequest);
     }
 }
