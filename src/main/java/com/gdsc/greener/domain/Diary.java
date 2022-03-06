@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Getter
@@ -18,37 +15,73 @@ public class Diary {
     @GeneratedValue
     private Long id;
 
-    private Emotion emotion;
+    private EmotionColor emotionColor;
 
-    @Column(name = "auto_diary", columnDefinition = "TEXT")
-    private String autoDiary;
+    @Column(name = "emotion_journal", columnDefinition = "TEXT")
+    private String emotionJournal;
 
-    @Column(columnDefinition = "TEXT")
-    private String diary;
+    @Column(name = "gratitude_journal", columnDefinition = "TEXT")
+    private String gratitudeJournal;
 
     @Column(name = "created_at")
     @CreatedDate
     private LocalDate createdAt;
 
-    public Diary(Emotion emotion) {
-        this.emotion = emotion;
+    @ManyToOne
+    private User user;
+
+    // user 수정 후 삭제
+    public Diary(String journal, DiaryType diaryType) {
+        if(diaryType == DiaryType.EMOTIONAL)
+            this.emotionJournal = journal;
+        else if(diaryType == DiaryType.GRATITUDE)
+            this.gratitudeJournal = journal;
         this.createdAt = LocalDate.now();
     }
 
-    public Diary(String diary) {
-        this.diary = diary;
+    public Diary(EmotionColor emotionColor, String journal, DiaryType diaryType) {
+        this.emotionColor = emotionColor;
+        if(diaryType == DiaryType.EMOTIONAL)
+            this.emotionJournal = journal;
+        else if(diaryType == DiaryType.GRATITUDE)
+            this.gratitudeJournal = journal;
         this.createdAt = LocalDate.now();
     }
 
-    public void update(Emotion emotion) {
-        this.emotion = emotion;
+    public Diary(String journal, DiaryType diaryType, User user) {
+        this.user = user;
+        if(diaryType == DiaryType.EMOTIONAL)
+            this.emotionJournal = journal;
+        else if(diaryType == DiaryType.GRATITUDE)
+            this.gratitudeJournal = journal;
+        this.createdAt = LocalDate.now();
     }
 
-    public void updateAutoDiary(String autoDiary) {
-        this.autoDiary = autoDiary;
+    public Diary(EmotionColor emotionColor, String journal, DiaryType diaryType, User user) {
+        this.emotionColor = emotionColor;
+        this.user = user;
+        if(diaryType == DiaryType.EMOTIONAL)
+            this.emotionJournal = journal;
+        else if(diaryType == DiaryType.GRATITUDE)
+            this.gratitudeJournal = journal;
+        this.createdAt = LocalDate.now();
     }
 
-    public void updateDiary(String diary) {
-        this.diary = diary;
+    public void update(EmotionColor emotionColor) {
+        this.emotionColor = emotionColor;
+    }
+    public void update(String journal, DiaryType diaryType) {
+        if(diaryType == DiaryType.EMOTIONAL)
+            this.emotionJournal = journal;
+        else if(diaryType == DiaryType.GRATITUDE)
+            this.gratitudeJournal = journal;
+    }
+
+    public void update(EmotionColor emotionColor, String journal, DiaryType diaryType) {
+        this.emotionColor = emotionColor;
+        if(diaryType == DiaryType.EMOTIONAL)
+            this.emotionJournal = journal;
+        else if(diaryType == DiaryType.GRATITUDE)
+            this.gratitudeJournal = journal;
     }
 }

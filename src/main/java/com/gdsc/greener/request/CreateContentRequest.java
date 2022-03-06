@@ -1,15 +1,15 @@
 package com.gdsc.greener.request;
 
-import com.gdsc.greener.domain.Emotion;
+import com.gdsc.greener.domain.EmotionColor;
 import lombok.Getter;
 
 @Getter
 public class CreateContentRequest {
-    Emotion emotion;
+    EmotionColor emotionColor;
     String url;
 
-    public CreateContentRequest(Emotion emotion, String url) {
-        this.emotion = emotion;
+    public CreateContentRequest(EmotionColor emotionColor, String url) {
+        this.emotionColor = emotionColor;
         this.url = url;
     }
 }

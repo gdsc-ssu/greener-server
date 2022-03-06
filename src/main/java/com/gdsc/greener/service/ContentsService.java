@@ -20,7 +20,7 @@ public class ContentsService {
     public ContentResponse createContent(CreateContentRequest createContentRequest){ // user 다시 정리되면 jwt 확인 후 사용 가능
         return new ContentResponse(contentsRepository.save(
                 Contents.builder()
-                        .emotion(createContentRequest.getEmotion())
+                        .emotionColor(createContentRequest.getEmotionColor())
                         .url(createContentRequest.getUrl())
                         .build()
         ));
@@ -31,6 +31,6 @@ public class ContentsService {
     }
 
     public ContentsResponse getContentsByEmotion(GetContentsByEmotionRequest contentRequest) {
-        return new ContentsResponse(contentsRepository.findAllByEmotion(contentRequest.getEmotion()));
+        return new ContentsResponse(contentsRepository.findAllByEmotionColor(contentRequest.getEmotionColor()));
     }
 }

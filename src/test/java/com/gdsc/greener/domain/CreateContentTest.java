@@ -16,16 +16,16 @@ public class CreateContentTest extends ServiceBase{
         given(contentsRepository.save(any(Contents.class)))
                 .willReturn(
                         Contents.builder()
-                                .emotion(Emotion.ANGRY)
+                                .emotionColor(EmotionColor.BLUE)
                                 .url("https://youtu.be/pgsathBaftg")
                                 .build()
                 );
 
-        CreateContentRequest createContentRequest = new CreateContentRequest(Emotion.ANGRY, "https://youtu.be/pgsathBaftg");
+        CreateContentRequest createContentRequest = new CreateContentRequest(EmotionColor.BLUE, "https://youtu.be/pgsathBaftg");
 
         ContentResponse res = contentsService.createContent(createContentRequest);
 
-        assertThat(res.getEmotion()).isEqualTo(testEmotion);
+        assertThat(res.getEmotionColor()).isEqualTo(testEmotion);
         assertThat(res.getUrl()).isEqualTo(testUrl);
     }
 }

@@ -1,13 +1,13 @@
 package com.gdsc.greener.request;
 
-import com.gdsc.greener.domain.Emotion;
+import com.gdsc.greener.domain.EmotionColor;
 import lombok.Getter;
 
 @Getter
 public class GetContentsByEmotionRequest {
-    Emotion emotion;
+    EmotionColor emotionColor;
 
-    public GetContentsByEmotionRequest(Emotion emotion) {
-        this.emotion = emotion;
+    public GetContentsByEmotionRequest(EmotionColor emotion) {
+        this.emotionColor = emotion;
     }
 }

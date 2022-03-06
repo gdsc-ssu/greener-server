@@ -20,7 +20,7 @@ public class GetContentsTest extends ServiceBase{
 
         List<Contents> list = new ArrayList<>();
         list.add(Contents.builder()
-                .emotion(content.getEmotion())
+                .emotionColor(content.getEmotionColor())
                 .url(content.getUrl())
                 .build());
 
@@ -32,7 +32,7 @@ public class GetContentsTest extends ServiceBase{
         ContentsResponse res = contentsService.getContents();
 
         assertThat(res.getContentsList().size()).isEqualTo(1);
-        assertThat(res.getContentsList().get(0).getEmotion()).isEqualTo(content.getEmotion());
+        assertThat(res.getContentsList().get(0).getEmotionColor()).isEqualTo(content.getEmotionColor());
         assertThat(res.getContentsList().get(0).getUrl()).isEqualTo(content.getUrl());
     }
 
@@ -44,19 +44,19 @@ public class GetContentsTest extends ServiceBase{
 
         List<Contents> list = new ArrayList<>();
         list.add(Contents.builder()
-                .emotion(content.getEmotion())
+                .emotionColor(content.getEmotionColor())
                 .url(content.getUrl())
                 .build());
 
-        given(contentsRepository.findAllByEmotion(content.getEmotion()))
+        given(contentsRepository.findAllByEmotionColor(content.getEmotionColor()))
                 .willReturn(
                         list
                 );
 
-        ContentsResponse res = contentsService.getContentsByEmotion(new GetContentsByEmotionRequest(content.getEmotion()));
+        ContentsResponse res = contentsService.getContentsByEmotion(new GetContentsByEmotionRequest(content.getEmotionColor()));
 
         assertThat(res.getContentsList().size()).isEqualTo(1);
-        assertThat(res.getContentsList().get(0).getEmotion()).isEqualTo(content.getEmotion());
+        assertThat(res.getContentsList().get(0).getEmotionColor()).isEqualTo(content.getEmotionColor());
         assertThat(res.getContentsList().get(0).getUrl()).isEqualTo(content.getUrl());
     }
 }

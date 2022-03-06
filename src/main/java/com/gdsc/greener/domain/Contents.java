@@ -15,12 +15,12 @@ public class Contents {
     @Id
     @GeneratedValue
     private Long id;
-    private Emotion emotion;
+    private EmotionColor emotionColor;
     private String url;
 
     @Builder
-    public Contents(Emotion emotion, String url){
-        this.emotion = emotion;
+    public Contents(EmotionColor emotionColor, String url){
+        this.emotionColor = emotionColor;
         this.url = url;
     }
 }

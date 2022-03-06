@@ -15,12 +15,12 @@ public class ServiceBase {
     @InjectMocks
     ContentsService contentsService;
 
-    Emotion testEmotion = Emotion.ANGRY;
+    EmotionColor testEmotion = EmotionColor.BLUE;
     String testUrl = "https://youtu.be/pgsathBaftg";
 
     Contents createMockContent() {
         Contents content = Contents.builder()
-                .emotion(Emotion.SAD)
+                .emotionColor(EmotionColor.ORANGE)
                 .url("https://youtu.be/pgsathBaftg")
                 .build();
 
