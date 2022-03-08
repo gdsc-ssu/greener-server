@@ -1,16 +1,17 @@
 package com.gdsc.greener.controller;
 
-import com.gdsc.greener.dto.UserDto;
+import com.gdsc.greener.dto.TokenDto;
 import com.gdsc.greener.request.CreateUserRequest;
+import com.gdsc.greener.request.TokenRequest;
 import com.gdsc.greener.request.UserRequest;
-import com.gdsc.greener.response.UserResponse;
+import com.gdsc.greener.response.TokenResponse;
 import com.gdsc.greener.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/v1/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -24,9 +25,14 @@ public class UserController {
     }
 
     /* 로그인 */
-    @PostMapping(value = "/signin")
-    public UserResponse signin(@RequestBody UserRequest userRequest) {
-        UserDto user = userService.signin(userRequest);
-        return new UserResponse(user.getName(), user.getEmail());
+    @PostMapping(value = "/login")
+    public TokenResponse login(@RequestBody UserRequest userRequest) {
+        return new TokenResponse(userService.login(userRequest));
+    }
+
+    /* 토큰 재발급 */
+    @PostMapping("/reissue")
+    public TokenResponse reissue(@RequestBody TokenRequest tokenRequest) {
+        return new TokenResponse(userService.reissue(tokenRequest));
     }
 }

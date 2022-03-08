@@ -1,13 +1,12 @@
 package com.gdsc.greener.repository;
 
-import com.gdsc.greener.domain.User;
+import com.gdsc.greener.domain.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    // 이메일로 검색
-    Optional<User> findByEmail(String email);
+public interface RefreshTokenRepository extends JpaRepository<RefreshToken, String> {
+    Optional<RefreshToken> findByKey(Long key);
 }

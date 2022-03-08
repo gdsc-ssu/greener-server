@@ -1,79 +1,38 @@
 package com.gdsc.greener.service;
 
-import com.gdsc.greener.config.auth.OAuthAttributes;
-import com.gdsc.greener.config.auth.SessionUser;
+import com.gdsc.greener.domain.RefreshToken;
 import com.gdsc.greener.domain.Role;
 import com.gdsc.greener.domain.User;
-import com.gdsc.greener.dto.UserDto;
+import com.gdsc.greener.dto.TokenDto;
+import com.gdsc.greener.jwt.JwtTokenProvider;
+import com.gdsc.greener.repository.RefreshTokenRepository;
 import com.gdsc.greener.repository.UserRepository;
 import com.gdsc.greener.request.CreateUserRequest;
+import com.gdsc.greener.request.TokenRequest;
 import com.gdsc.greener.request.UserRequest;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpSession;
-import java.util.Collections;
-
-/*
-@RequiredArgsConstructor
-@Service
-public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-    private final UserRepository userRepository;
-    private final HttpSession httpSession;
-
-    @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
-        OAuth2User oAuth2User = delegate.loadUser(userRequest);
-
-        // OAuth2 서비스 id (구글, 카카오, 네이버)
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        // OAuth2 로그인 진행 시 키가 되는 필드 값(PK)
-        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
-
-        // OAuth2UserService
-        OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
-        User user = saveOrUpdate(attributes);
-        httpSession.setAttribute("user", new SessionUser(user)); // SessionUser (직렬화된 dto 클래스 사용)
-
-        return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),
-                attributes.getAttributes(),
-                attributes.getNameAttributeKey());
-    }
-
-    // 유저 생성 및 수정 서비스 로직
-    private User saveOrUpdate(OAuthAttributes attributes){
-        User user = userRepository.findByEmail(attributes.getEmail())
-                .map(entity -> entity.update(attributes.getName(), attributes.getPicture()))
-                .orElse(attributes.toEntity());
-        return userRepository.save(user);
-    }
-}
-*/
-
+import javax.transaction.Transactional;
 
 @AllArgsConstructor
 @Service
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository tokenRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     //Spring security 필수 구현 method
     @Override
-    public User loadUserByUsername(String userID) throws UsernameNotFoundException {
-        return userRepository.findById(userID).orElseThrow(() -> new UsernameNotFoundException(userID));
+    public User loadUserByUsername(String id) throws UsernameNotFoundException {
+        return userRepository.findById(Long.parseLong(id)).orElseThrow(() -> new UsernameNotFoundException(id));
     }
 
     public void signup(CreateUserRequest createUserRequest) {
@@ -83,15 +42,51 @@ public class UserService implements UserDetailsService {
                 createUserRequest.getName(),
                 createUserRequest.getEmail(),
                 encoder.encode(createUserRequest.getPassword()),
-                null,
                 Role.USER
         ));
     }
 
     /* 로그인 */
-    public UserDto signin(UserRequest userRequest) {
+    @Transactional
+    public TokenDto login(UserRequest userRequest) {
         String email = userRequest.getEmail();
         User user = userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException(email));
-        return new UserDto(user.getEmail(), user.getName());
+        if (!passwordEncoder.matches(userRequest.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+        }
+
+        // AccessToken, RefreshToken 발급
+        TokenDto tokenDto = jwtTokenProvider.createToken(user.getId(), user.getRole());
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .key(user.getId())
+                .token(tokenDto.getRefreshToken())
+                .build();
+
+        tokenRepository.save(refreshToken);
+
+        return tokenDto;
+    }
+
+    @Transactional
+    public TokenDto reissue(TokenRequest tokenRequest) {
+        if(!jwtTokenProvider.validateToken(tokenRequest.getRefreshToken())) {
+            throw new RuntimeException("RefreshTokenException");
+        }
+
+        String accessToken = tokenRequest.getAccessToken();
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+
+        User user = userRepository.findById(Long.parseLong(authentication.getName())).orElseThrow(() -> new UsernameNotFoundException(authentication.getName()));
+        RefreshToken refreshToken = tokenRepository.findByKey(user.getId()).orElseThrow(RuntimeException::new);
+
+        if(!refreshToken.getToken().equals(tokenRequest.getRefreshToken()))
+            throw new RuntimeException("refresh token is not equal");
+
+        TokenDto newCreatedToken = jwtTokenProvider.createToken(user.getId(), user.getRole());
+        RefreshToken updateRefreshToken = refreshToken.updateToken(newCreatedToken.getRefreshToken());
+        tokenRepository.save(updateRefreshToken);
+
+        return newCreatedToken;
     }
 }

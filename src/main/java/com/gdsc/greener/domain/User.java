@@ -6,9 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
@@ -18,29 +16,18 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue
     private Long id;
-    private String name;
     private String email;
+    private String name;
     private String password;
-    private String picture;
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Builder
-    public User(String name, String email, String password, String picture, Role role) {
+    public User(String name, String email, String password, Role role) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.picture = picture;
         this.role = role;
-    }
-
-    public User update(String name, String picture) {
-        this.name = name;
-        this.picture = picture;
-        return this;
-    }
-
-    public String getRoleKey() {
-        return this.role.getKey();
     }
 
     @Override
