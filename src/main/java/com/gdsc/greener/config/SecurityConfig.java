@@ -1,5 +1,6 @@
 package com.gdsc.greener.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdsc.greener.domain.Role;
 import com.gdsc.greener.jwt.JwtAuthenticationFilter;
 import com.gdsc.greener.jwt.JwtTokenProvider;
@@ -20,8 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final ObjectMapper objectMapper;
 
     // 암호화에 필요한 PasswordEncoder 를 Bean 등록합니다.
     @Bean
@@ -38,28 +38,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .httpBasic().disable() // rest api 만을 고려하여 기본 설정은 해제하겠습니다.
-                .csrf().disable() // csrf 보안 토큰 disable처리.
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 역시 사용하지 않습니다.
+        http.httpBasic().disable()
+                .cors().and()
+                .formLogin().disable()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests() // 요청에 대한 사용권한 체크
-                //회원가입(토큰없는상태에서요청들어옴)
+                .authorizeRequests()
                 .antMatchers("/api/users/signup").permitAll()
                 //로그인(토큰없는상태에서요청들어옴)
                 .antMatchers("/api/users/login").permitAll()
-
-//                .antMatchers(HttpMethod.GET, "/api/contents").permitAll()
-                .anyRequest().permitAll()
-
+                .antMatchers(HttpMethod.GET, "/**").permitAll()
+                .anyRequest().hasRole("USER")
                 .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(customAuthenticationEntryPoint)
-                .accessDeniedHandler(customAccessDeniedHandler)
-
-                .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                        UsernamePasswordAuthenticationFilter.class);
-        // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)
+        ;
     }
 }

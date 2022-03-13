@@ -28,7 +28,7 @@ public class Diary {
     private LocalDate createdAt;
 
     @ManyToOne
-    private User user;
+    private Account account;
 
     // user 수정 후 삭제
     public Diary(String journal, DiaryType diaryType) {
@@ -48,8 +48,8 @@ public class Diary {
         this.createdAt = LocalDate.now();
     }
 
-    public Diary(String journal, DiaryType diaryType, User user) {
-        this.user = user;
+    public Diary(String journal, DiaryType diaryType, Account account) {
+        this.account = account;
         if(diaryType == DiaryType.EMOTIONAL)
             this.emotionJournal = journal;
         else if(diaryType == DiaryType.GRATITUDE)
@@ -57,9 +57,9 @@ public class Diary {
         this.createdAt = LocalDate.now();
     }
 
-    public Diary(EmotionColor emotionColor, String journal, DiaryType diaryType, User user) {
+    public Diary(EmotionColor emotionColor, String journal, DiaryType diaryType, Account account) {
         this.emotionColor = emotionColor;
-        this.user = user;
+        this.account = account;
         if(diaryType == DiaryType.EMOTIONAL)
             this.emotionJournal = journal;
         else if(diaryType == DiaryType.GRATITUDE)

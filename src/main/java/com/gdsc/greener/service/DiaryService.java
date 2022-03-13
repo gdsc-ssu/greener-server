@@ -1,11 +1,10 @@
 package com.gdsc.greener.service;
 
-import com.gdsc.greener.domain.Diary;
-import com.gdsc.greener.domain.DiaryType;
-import com.gdsc.greener.domain.EmotionColor;
+import com.gdsc.greener.domain.*;
 import com.gdsc.greener.dto.DiaryDto;
 import com.gdsc.greener.dto.DiaryEmotionDto;
 import com.gdsc.greener.repository.DiaryRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,35 +13,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class DiaryService {
 
-    @Autowired
-    private DiaryRepository diaryRepository;
+    private final DiaryRepository diaryRepository;
 
-    public DiaryDto createDiary(EmotionColor emotionColor, String diary) throws Exception{
-        if(!diaryRepository.findByCreatedAt(LocalDate.now()).isPresent()) {
-            return new DiaryDto(diaryRepository.save(new Diary(emotionColor, diary, DiaryType.EMOTIONAL)));
+    public DiaryDto createDiary(String emotionColor, String diary, Account account) throws Exception{
+        if(diaryRepository.findByAccountAndCreatedAt(account, LocalDate.now()).isPresent()) {
+            return new DiaryDto(diaryRepository.save(new Diary(EmotionColor.valueOf(emotionColor), diary, DiaryType.EMOTIONAL, account)));
         } else {
             Diary oldDiary = diaryRepository.findByCreatedAt(LocalDate.now()).orElseThrow(Exception::new);
-            oldDiary.update(emotionColor, diary, DiaryType.EMOTIONAL);
+            oldDiary.update(EmotionColor.valueOf(emotionColor), diary, DiaryType.EMOTIONAL);
             diaryRepository.save(oldDiary);
             return new DiaryDto(oldDiary);
         }
     }
 
-    public DiaryDto createDiary(Long id, String diary) throws Exception {
+    public DiaryDto createDiary(Long id, String diary, Account account) throws Exception {
         if(!diaryRepository.findById(id).isPresent()) {
             return new DiaryDto(diaryRepository.save(new Diary(diary, DiaryType.GRATITUDE)));
         } else {
-            Diary oldDiary = diaryRepository.findByCreatedAt(LocalDate.now()).orElseThrow(Exception::new);
+            Diary oldDiary = diaryRepository.findByAccountAndCreatedAt(account, LocalDate.now()).orElseThrow(Exception::new);
             oldDiary.update(diary, DiaryType.GRATITUDE);
             diaryRepository.save(oldDiary);
             return new DiaryDto(oldDiary);
         }
     }
 
-    public List<DiaryEmotionDto> getMonthDiary(LocalDate start, LocalDate end) throws Exception {
-        return diaryRepository.findAllByCreatedAtBetween(start, end).stream()
+    public List<DiaryEmotionDto> getMonthDiary(Account account, LocalDate start, LocalDate end) throws Exception {
+        return diaryRepository.findAllByAccountAndCreatedAtBetween(account, start, end).stream()
                 .map(DiaryEmotionDto::fromEntity).collect(Collectors.toList());
     }
 

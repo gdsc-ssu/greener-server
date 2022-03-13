@@ -1,9 +1,9 @@
 package com.gdsc.greener.domain;
 
 import com.gdsc.greener.repository.ContentsRepository;
-import com.gdsc.greener.repository.UserRepository;
+import com.gdsc.greener.repository.AccountRepository;
 import com.gdsc.greener.service.ContentsService;
-import com.gdsc.greener.service.UserService;
+import com.gdsc.greener.service.AccountService;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @ExtendWith(MockitoExtension.class)
 public class ServiceBase {
     @Mock
-    UserRepository userRepository;
+    AccountRepository accountRepository;
     @Mock
     PasswordEncoder passwordEncoder;
 
@@ -21,7 +21,7 @@ public class ServiceBase {
     ContentsRepository contentsRepository;
 
     @InjectMocks
-    UserService userService;
+    AccountService accountService;
 
     @InjectMocks
     ContentsService contentsService;
@@ -33,8 +33,8 @@ public class ServiceBase {
     EmotionColor testEmotion = EmotionColor.BLUE;
     String testUrl = "https://youtu.be/pgsathBaftg";
 
-    User createMockUser() {
-        return User.builder()
+    Account createMockUser() {
+        return Account.builder()
                 .name(testUsername)
                 .email(testEmail)
                 .password(passwordEncoder.encode(testPassword))

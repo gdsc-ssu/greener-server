@@ -3,9 +3,9 @@ package com.gdsc.greener.application;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdsc.greener.domain.Contents;
 import com.gdsc.greener.domain.EmotionColor;
-import com.gdsc.greener.domain.User;
+import com.gdsc.greener.domain.Account;
 import com.gdsc.greener.repository.ContentsRepository;
-import com.gdsc.greener.repository.UserRepository;
+import com.gdsc.greener.repository.AccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
@@ -34,7 +34,7 @@ public class BaseControllerTest {
     protected ObjectMapper objectMapper;
 
     @Autowired
-    protected UserRepository userRepository;
+    protected AccountRepository accountRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -48,7 +48,7 @@ public class BaseControllerTest {
 
     @BeforeEach
     void setup() {
-        userRepository.save(User.builder()
+        accountRepository.save(Account.builder()
                 .name(testUsername)
                 .email(testEmail)
                 .password(passwordEncoder.encode(testPassword))
