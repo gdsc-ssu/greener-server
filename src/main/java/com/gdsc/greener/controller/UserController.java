@@ -1,6 +1,5 @@
 package com.gdsc.greener.controller;
 
-import com.gdsc.greener.dto.TokenDto;
 import com.gdsc.greener.request.CreateUserRequest;
 import com.gdsc.greener.request.TokenRequest;
 import com.gdsc.greener.request.UserRequest;

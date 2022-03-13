@@ -1,6 +1,6 @@
 package com.gdsc.greener.application;
 
-import com.gdsc.greener.domain.Emotion;
+import com.gdsc.greener.domain.EmotionColor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -8,8 +8,6 @@ import org.springframework.http.MediaType;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static org.assertj.core.api.Assertions.*;
 
 public class GetContentsTest extends BaseControllerTest {
 
@@ -33,7 +31,7 @@ public class GetContentsTest extends BaseControllerTest {
         createMockContent();
 
         mockMvc.perform(get("/v1/contents")
-                .content(String.valueOf(Emotion.ANGRY))
+                .content(String.valueOf(EmotionColor.BLUE))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

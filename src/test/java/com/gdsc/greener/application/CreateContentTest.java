@@ -1,6 +1,6 @@
 package com.gdsc.greener.application;
 
-import com.gdsc.greener.domain.Emotion;
+import com.gdsc.greener.domain.EmotionColor;
 import com.gdsc.greener.request.CreateContentRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ public class CreateContentTest extends BaseControllerTest {
     @Test
     @DisplayName("콘텐츠 생성 (성공)")
     void createContentSuccess() throws Exception {
-        Emotion testEmotion = Emotion.SAD;
+        EmotionColor testEmotion = EmotionColor.ORANGE;
         String testUrl = "https://youtu.be/as_vTI0_r9g";
 
         String request = objectMapper.writeValueAsString(

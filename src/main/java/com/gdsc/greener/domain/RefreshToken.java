@@ -8,14 +8,14 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Table(name = "refresh_token")
 @NoArgsConstructor
 public class RefreshToken {
     @Id
     @GeneratedValue
-    private String id;
+    private Long id;
 
-    private Long key;
+    @Column(name = "token_key")
+    private Long tokenKey;
     private String token;
 
     public RefreshToken updateToken(String token) {
@@ -24,8 +24,8 @@ public class RefreshToken {
     }
 
     @Builder
-    public RefreshToken(Long key, String token) {
-        this.key = key;
+    public RefreshToken(Long tokenKey, String token) {
+        this.tokenKey = tokenKey;
         this.token = token;
     }
 }

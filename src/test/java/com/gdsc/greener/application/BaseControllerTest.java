@@ -2,7 +2,8 @@ package com.gdsc.greener.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdsc.greener.domain.Contents;
-import com.gdsc.greener.domain.Emotion;
+import com.gdsc.greener.domain.EmotionColor;
+import com.gdsc.greener.domain.User;
 import com.gdsc.greener.repository.ContentsRepository;
 import com.gdsc.greener.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,17 +37,28 @@ public class BaseControllerTest {
     protected UserRepository userRepository;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     protected ContentsRepository contentsRepository;
+
+    String testEmail = "greener@gmail.com";
+    String testPassword = "greener";
+    String testUsername = "greener";
 
     @BeforeEach
     void setup() {
-        // user 관련
+        userRepository.save(User.builder()
+                .name(testUsername)
+                .email(testEmail)
+                .password(passwordEncoder.encode(testPassword))
+                .build());
     }
 
-    Contents createMockContent() {
-        return contentsRepository.save(
+    void createMockContent() {
+        contentsRepository.save(
                 Contents.builder()
-                        .emotion(Emotion.ANGRY)
+                        .emotionColor(EmotionColor.BLUE)
                         .url("https://youtu.be/pgsathBaftg")
                         .build()
         );

@@ -4,7 +4,7 @@ import com.gdsc.greener.domain.Role;
 import com.gdsc.greener.dto.TokenDto;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,7 +22,8 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private String secretKey = "greener";
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     // 토큰 유효시간 30분
     private final Long accessTokenValidMillisecond = 60 * 60 * 1000L; // 토큰 유효시간 1시간
@@ -37,10 +38,10 @@ public class JwtTokenProvider {
     }
 
     // JWT 토큰 생성
-    public TokenDto createToken(Long userPk, Role roles) {
+    public TokenDto createToken(Long userPk, Role role) {
 
         Claims claims = Jwts.claims().setSubject(String.valueOf(userPk)); // Claims에 user 구분을 위한 UserPk 및 authorities 목록 삽입
-        claims.put("roles", roles); // 정보는 key / value 쌍으로 저장된다.
+        claims.put("role", role); // 정보는 key / value 쌍으로 저장된다.
 
         Date now = new Date(); // 생성날짜, 만료날짜를 위한 Date
 
@@ -54,7 +55,7 @@ public class JwtTokenProvider {
 
         String refreshToken = Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .setExpiration(new Date(now.getTime() + accessTokenValidMillisecond))
+                .setExpiration(new Date(now.getTime() + refreshTokenValidMillisecond))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
@@ -70,6 +71,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
         UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
+        System.out.println(userDetails.getAuthorities());
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
