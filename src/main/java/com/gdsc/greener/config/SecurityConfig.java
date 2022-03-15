@@ -1,13 +1,15 @@
 package com.gdsc.greener.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gdsc.greener.domain.Role;
 import com.gdsc.greener.jwt.JwtAuthenticationFilter;
 import com.gdsc.greener.jwt.JwtTokenProvider;
+import com.gdsc.greener.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -23,6 +25,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
 
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
     // 암호화에 필요한 PasswordEncoder 를 Bean 등록합니다.
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -38,13 +42,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/users/signup").permitAll()
-                //로그인(토큰없는상태에서요청들어옴)
-                .antMatchers("/api/users/login").permitAll()
-                .antMatchers(HttpMethod.GET, "/**").permitAll()
+                .antMatchers("/api/users").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/**").permitAll()
                 .anyRequest().hasRole("USER")
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)
+                .logout()
+                .logoutUrl("/api/users/logout")
+                .and()
+                .oauth2Login()
+                .userInfoEndpoint()
+                .userService(customOAuth2UserService)
         ;
+
+        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class);
     }
+
 }

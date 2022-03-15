@@ -16,24 +16,35 @@ public class Account {
     @Column(unique = true)
     private String email;
     private String name;
-    private String password;
     @Enumerated(EnumType.STRING)
     private UserStatus state;
-    private String refreshToken;
+    private String token;
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public void updateRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
+    public void updateToken(String token) {
+        this.token = token;
     }
 
     @Builder
-    public Account(String email, String name, String password, UserStatus state, Role role, String refreshToken) {
-        this.name = name;
+    public Account(String email, String name, UserStatus state, Role role) {
         this.email = email;
-        this.password = password;
+        this.name = name;
         this.state = state;
         this.role = role;
-        this.refreshToken = refreshToken;
+    }
+
+    @Builder
+    public Account(String email, String name, UserStatus state, Role role, String token) {
+        this.email = email;
+        this.name = name;
+        this.state = state;
+        this.role = role;
+        this.token = token;
+    }
+
+    public Account update(String name) {
+        this.name = name;
+        return this;
     }
 }

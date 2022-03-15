@@ -66,17 +66,17 @@ public class JwtTokenProvider {
     /**
      * JWTToken 생성
      *
-     * @param userId              발급할 사용자의 아이디
+     * @param email              발급할 사용자의 아이디
      * @param role               사용자에게 허용할 권한
      * @param tokenValidMilSecond 토큰 유효시간
      * @return AccessToken
      */
-    protected String generateToken(String userId, Role role, long tokenValidMilSecond) {
+    protected String generateToken(String email, Role role, long tokenValidMilSecond) {
         Date now = new Date();
         List<Role> roles = Collections.singletonList(role);
 
         return Jwts.builder()
-                .claim("userId",userId)
+                .claim("userId",email)
                 .claim("roles",roles)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + tokenValidMilSecond))

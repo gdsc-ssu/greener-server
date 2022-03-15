@@ -19,10 +19,10 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
 
     public DiaryDto createDiary(String emotionColor, String diary, Account account) throws Exception{
-        if(diaryRepository.findByAccountAndCreatedAt(account, LocalDate.now()).isPresent()) {
+        if(!diaryRepository.findByAccountAndCreatedAt(account, LocalDate.now()).isPresent()) {
             return new DiaryDto(diaryRepository.save(new Diary(EmotionColor.valueOf(emotionColor), diary, DiaryType.EMOTIONAL, account)));
         } else {
-            Diary oldDiary = diaryRepository.findByCreatedAt(LocalDate.now()).orElseThrow(Exception::new);
+            Diary oldDiary = diaryRepository.findByAccountAndCreatedAt(account, LocalDate.now()).orElseThrow(Exception::new);
             oldDiary.update(EmotionColor.valueOf(emotionColor), diary, DiaryType.EMOTIONAL);
             diaryRepository.save(oldDiary);
             return new DiaryDto(oldDiary);

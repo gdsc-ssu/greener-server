@@ -7,9 +7,9 @@ import java.util.List;
 
 @Getter
 public class ContentsResponse {
-    List<Contents> contentsList;
+    List<Contents> contents;
 
     public ContentsResponse(List<Contents> list) {
-        this.contentsList = list;
+        this.contents = list;
     }
 }

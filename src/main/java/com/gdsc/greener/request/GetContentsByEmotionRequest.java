@@ -5,9 +5,9 @@ import lombok.Getter;
 
 @Getter
 public class GetContentsByEmotionRequest {
-    EmotionColor emotionColor;
+    String emotionColor;
 
-    public GetContentsByEmotionRequest(EmotionColor emotion) {
-        this.emotionColor = emotion;
+    public GetContentsByEmotionRequest(String emotionColor) {
+        this.emotionColor = emotionColor;
     }
 }

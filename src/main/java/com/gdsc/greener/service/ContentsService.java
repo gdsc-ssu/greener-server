@@ -1,6 +1,7 @@
 package com.gdsc.greener.service;
 
 import com.gdsc.greener.domain.Contents;
+import com.gdsc.greener.domain.EmotionColor;
 import com.gdsc.greener.repository.ContentsRepository;
 import com.gdsc.greener.request.CreateContentRequest;
 import com.gdsc.greener.request.GetContentsByEmotionRequest;
@@ -31,6 +32,6 @@ public class ContentsService {
     }
 
     public ContentsResponse getContentsByEmotion(GetContentsByEmotionRequest contentRequest) {
-        return new ContentsResponse(contentsRepository.findAllByEmotionColor(contentRequest.getEmotionColor()));
+        return new ContentsResponse(contentsRepository.findAllByEmotionColor(EmotionColor.valueOf(contentRequest.getEmotionColor())));
     }
 }
