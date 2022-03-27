@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //로그인(토큰없는상태에서요청들어옴)
                 .antMatchers("/api/users/login").permitAll()
                 .antMatchers(HttpMethod.GET, "/**").permitAll()
-                .anyRequest().hasRole("USER")
+                .anyRequest().permitAll()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)
         ;

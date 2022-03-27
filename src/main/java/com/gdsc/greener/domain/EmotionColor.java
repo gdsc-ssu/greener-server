@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum EmotionColor {
-    ORANGE("ORNAGE"), BLUE("BLUE"), GREEN("GREEN");
+    MINT("MINT"), BLUE("BLUE"), GREEN("GREEN");
 
     private final String name;
 

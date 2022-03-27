@@ -43,7 +43,7 @@ public class ServiceBase {
 
     Contents createMockContent() {
         return Contents.builder()
-                .emotionColor(EmotionColor.ORANGE)
+                .emotionColor(EmotionColor.MINT)
                 .url("https://youtu.be/pgsathBaftg")
                 .build();
     }

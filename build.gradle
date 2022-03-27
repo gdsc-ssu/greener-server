@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.gdsc'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = '11'
 
 configurations {
     compileOnly {
@@ -36,11 +36,11 @@ dependencies {
 
     // jwt
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
-
-    //오류 해결을 위해 추가로 넣은 의존성
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 
+    // google cloud
+    implementation 'com.google.cloud:google-cloud-language:2.1.9'
 }
 
 tasks.named('test') {

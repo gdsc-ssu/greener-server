@@ -32,7 +32,7 @@ public class DiaryController {
             @RequestBody CreateDiaryEmotionRequest diaryEmotionRequest,
             @AuthenticationPrincipal Account account
             ) throws Exception { // user 다시 정리되면 jwt 확인 후 사용 가능
-        DiaryDto diary = diaryService.createDiary(diaryEmotionRequest.getEmotionColor(), diaryEmotionRequest.getDiary(), account);
+        DiaryDto diary = diaryService.createDiary(diaryEmotionRequest.getDiary(), account);
         return new DiaryResponse(diary.getEmotionColor(), diary.getEmotionJournal(), diary.getGratitudeJournal(), diary.getCreatedAt());
     }
 
@@ -46,6 +46,13 @@ public class DiaryController {
     ) throws Exception { // user 다시 정리되면 jwt 확인 후 사용 가능
         DiaryDto diary = diaryService.createDiary(id, diaryRequest.getDiary(), account);
         return new DiaryResponse(diary.getEmotionColor(), diary.getEmotionJournal(), diary.getGratitudeJournal(), diary.getCreatedAt());
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{ud}/change")
+    public DiaryResponse blueToGreen(@PathVariable Long id) throws Exception {
+        DiaryDto diary = diaryService.change(id);
+        return new DiaryResponse(diary);
     }
 
     @ResponseStatus(HttpStatus.OK)
