@@ -11,6 +11,7 @@ import com.gdsc.greener.repository.AccountRepository;
 import com.gdsc.greener.request.CreateUserRequest;
 import com.gdsc.greener.request.TokenRequest;
 import com.gdsc.greener.request.UserRequest;
+import com.gdsc.greener.utils.JwtUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,17 +26,20 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder encoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtUtil;
 
 
     public void signup(CreateUserRequest createUserRequest) {
-        if(accountRepository.findByEmail(createUserRequest.getEmail()).isPresent()) throw new EmailDuplicateException(createUserRequest.getEmail());
+        if (accountRepository.findByEmail(createUserRequest.getEmail()).isPresent())
+            throw new EmailDuplicateException(createUserRequest.getEmail());
 
         accountRepository.save(new Account(
                 createUserRequest.getEmail(),
                 createUserRequest.getName(),
                 encoder.encode(createUserRequest.getPassword()),
-                UserStatus.NORMAL,
-                Role.ROLE_USER,
+//                UserStatus.NORMAL,
+//                Role.ROLE_USER,
+                "ROLE_USER",
                 jwtTokenProvider.createRefreshToken(createUserRequest.getEmail(), Role.ROLE_USER)
         ));
     }
@@ -43,29 +47,15 @@ public class AccountService {
     /* 로그인 */
     @Transactional
     public TokenDto login(UserRequest userRequest) {
-        Account account = accountRepository.findByEmail(userRequest.getEmail()).orElseThrow(()-> new UsernameNotFoundException(userRequest.getEmail()));
+        Account account = accountRepository.findByEmail(userRequest.getEmail()).orElseThrow(() -> new UsernameNotFoundException(userRequest.getEmail()));
 
         if (!encoder.matches(userRequest.getPassword(), account.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
 
-        // AccessToken, RefreshToken 발급
-        account.updateRefreshToken(jwtTokenProvider.createRefreshToken(account.getEmail(), account.getRole()));
-
         return new TokenDto(
-                jwtTokenProvider.createAccessToken(account.getEmail(), account.getRole()),
+                jwtUtil.createToken(account.getId(), account.getName(), "USER"),
                 account.getRefreshToken()
         );
-    }
-
-    @Transactional
-    public TokenDto reissue(TokenRequest tokenRequest) {
-        String refreshId = jwtTokenProvider.getUserId(jwtTokenProvider.getClaimsFromToken(tokenRequest.getRefreshToken()));
-        Account account = accountRepository.findByEmailAndStateAndRefreshToken(refreshId, UserStatus.NORMAL, tokenRequest.getRefreshToken())
-                .orElseThrow(() -> new InvalidUserException(refreshId));
-
-        return TokenDto.builder()
-                .accessToken(jwtTokenProvider.createAccessToken(account.getEmail(), account.getRole()))
-                .build();
     }
 }

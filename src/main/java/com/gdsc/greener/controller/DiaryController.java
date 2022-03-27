@@ -1,7 +1,6 @@
 package com.gdsc.greener.controller;
 
 import com.gdsc.greener.domain.Account;
-import com.gdsc.greener.domain.MemberAdapter;
 import com.gdsc.greener.dto.DiaryDto;
 import com.gdsc.greener.dto.DiaryEmotionDto;
 import com.gdsc.greener.request.CreateDiaryEmotionRequest;

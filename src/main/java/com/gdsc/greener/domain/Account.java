@@ -1,5 +1,6 @@
 package com.gdsc.greener.domain;
 
+import io.jsonwebtoken.Claims;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,22 +18,20 @@ public class Account {
     private String email;
     private String name;
     private String password;
-    @Enumerated(EnumType.STRING)
-    private UserStatus state;
     private String refreshToken;
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    private String role;
 
-    public void updateRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
+    public Account(Claims claims) {
+        this.id = Long.valueOf(claims.get("userId").toString());
+        this.name = claims.get("name").toString();
+        this.role = claims.get("role").toString();
     }
 
     @Builder
-    public Account(String email, String name, String password, UserStatus state, Role role, String refreshToken) {
+    public Account(String email, String name, String password, String role, String refreshToken) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.state = state;
         this.role = role;
         this.refreshToken = refreshToken;
     }

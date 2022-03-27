@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface AccountRepository extends JpaRepository<Account, Long> {
     // 이메일로 검색
     Optional<Account> findByEmail(String email);
-    Optional<Account> findByEmailAndStateAndRefreshToken(String email, UserStatus state, String refreshToken);
+//    Optional<Account> findByEmailAndStateAndRefreshToken(String email, UserStatus state, String refreshToken);
 }

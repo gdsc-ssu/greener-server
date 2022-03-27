@@ -28,10 +28,4 @@ public class UserController {
     public TokenResponse login(@RequestBody UserRequest userRequest) {
         return new TokenResponse(accountService.login(userRequest));
     }
-
-    /* 토큰 재발급 */
-    @PostMapping("/reissue")
-    public TokenResponse reissue(@RequestBody TokenRequest tokenRequest) {
-        return new TokenResponse(accountService.reissue(tokenRequest));
-    }
 }
